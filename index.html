@@ -1,0 +1,73 @@
+<!doctype html>
+<title>Paste without Back End</title>
+
+<h1>Paste without Back End</h1>
+
+<div><textarea id="a" cols="40" rows="20" style="width: 60%"></textarea></div>
+<div><textarea id="b" cols="40" style="width: 60%"></textarea></div>
+<div><textarea id="c" cols="40" style="width: 60%; display: none;"></textarea></div>
+
+<script src="bin.js"></script>
+<script>
+  function Uint8ToBase64(u8Arr) {
+    var CHUNK_SIZE = 0x8000;
+    var index = 0;
+    var length = u8Arr.length;
+    var result = '';
+    var slice;
+    while (index < length) {
+      slice = u8Arr.subarray(index, Math.min(index + CHUNK_SIZE, length)); 
+      result += String.fromCharCode.apply(null, slice);
+      index += CHUNK_SIZE;
+    }
+    return btoa(result);
+  }
+
+  function base64ToUint8(base64) {
+    var raw = window.atob(base64);
+    var rawLength = raw.length;
+    var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+    for(i = 0; i < rawLength; i++) {
+      array[i] = raw.charCodeAt(i);
+    }
+    return array;
+  }
+
+  // (async function () {
+  //   var a = await lzma_compress('hello worldhello worldhello worldhello worldhello worldhello worldhello worldhello worldhello worldhello world');
+  //   console.log(a);
+
+  //   var b = Uint8ToBase64(a);
+  //   console.log(b);
+
+  //   var c = base64ToUint8(b);
+  //   console.log(c);
+
+  //   var d = await lzma_decompress(c);
+  //   console.log(d);
+  // }());
+
+  var A = document.querySelector('#a');
+  var B = document.querySelector('#b');
+  var C = document.querySelector('#c');
+
+  A.oninput = async () => {
+    var a = await lzma_compress(A.value);
+
+    var b = Uint8ToBase64(a)
+        .replace(/=/g, '')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+    B.value = location.href.substring(0, location.href.lastIndexOf('/') + 1) + b;
+
+    var c = b
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+
+    var d = base64ToUint8(c);
+
+    var e = await lzma_decompress(d);
+    C.value = e;
+  }
+</script>

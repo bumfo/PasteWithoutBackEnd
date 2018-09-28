@@ -130,6 +130,7 @@
 
   c.addEventListener("input", function() {
     var t = getCaret(c);
+
     update(c.textContent);
     setCaret(t, c);
   });
@@ -401,8 +402,13 @@
     return x.replace(/&/g, "&amp;").replace(/</g, "&lt;");
   }
 
-  function update(value) {
-    c.innerHTML = light(encode(value));
+  function update(x) {
+    var x = c.textContent;
+    if (!x.endsWith('\n')) {
+      x += '\n';
+    }
+
+    c.innerHTML = light(encode(x));
   }
 
   var Caret = function() {

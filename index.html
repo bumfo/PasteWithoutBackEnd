@@ -59,7 +59,19 @@
         .replace(/=/g, '')
         .replace(/\+/g, '-')
         .replace(/\//g, '_');
+
+    console.log(b.length)
+
+    if (b.length > 1024) {
+      b = 'big#' + b;
+    }
+
     B.value = location.href.substring(0, location.href.lastIndexOf('/') + 1) + b;
+
+    var j = b.indexOf('#');
+    if (j !== -1) {
+      b = b.substr(j + 1);
+    }
 
     var c = b
       .replace(/-/g, '+')

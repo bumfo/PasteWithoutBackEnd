@@ -45,7 +45,14 @@
 
   B.oninput = decode;
 
-  B.value = basename(location.href);
+  var a = basename(location.href);
+
+  var j = a.indexOf('#');
+  if (j !== -1) {
+    a = a.substr(j + 1);
+  }
+
+  B.value = a;
 
   (async function() {
     try {

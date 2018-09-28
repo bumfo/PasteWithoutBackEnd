@@ -8,19 +8,17 @@
     margin: 0;
     padding: 0;
   }
-  html {
-    height: 100%;
-  }
-  body {
-    min-height: 100%;
+  html, body, section, pre, code {
+    min-height: 100vh;
+    display: block;
   }
   pre {
     padding: 0;
     margin: 0;
   }
   pre code {
+    box-sizing: border-box;
     padding: 8px;
-    min-height: 100%;
   }
   pre code {
     display: block;
@@ -278,6 +276,8 @@
   var tt = false;
 
   c.addEventListener("dblclick", function(e) {
+    e.preventDefault();
+
     var value = c.textContent;
 
     var s = window.getSelection();
@@ -294,7 +294,7 @@
 
     var t = getCaret(c);
 
-    console.log(t);
+    // console.log(t);
 
     var w = /\w/, o = /[\t=+\-*\/!()\[\]\{\},:;]/;
 

@@ -62,9 +62,9 @@
 
     console.log(b.length)
 
-    if (b.length > 1024) {
-      b = 'big#' + b;
-    }
+    // if (b.length > 1024) {
+      b = 'plain#' + b;
+    // }
 
     B.value = location.href.substring(0, location.href.lastIndexOf('/') + 1) + b;
 

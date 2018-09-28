@@ -113,7 +113,7 @@
   var C = document.querySelector("#c");
 
   C.onchange = () => {
-    update(C.value);
+    update(C.value, false, false, true);
 
     c.contentEditable = true;
     c.spellcheck = false;
@@ -438,16 +438,17 @@
   }
 
   function clearRedo() {
+    redoStack.length = 0;
   }
 
   function undo() {
-    console.log(undoStack);
+    // console.log(undoStack);
 
     var x = popUndo();
 
-    console.log(x);
+    // console.log(x);
 
-    console.log(undoStack);
+    // console.log(undoStack);
 
     if (x !== null) {
       var t = x[1];
@@ -486,18 +487,20 @@
   var lastContent = '';
   var lastCaret = [0, 0];
 
-  function update(x, undo, redo) {
-    console.log(x.substr(0, 10), undo, redo);
+  function update(x, undo, redo, init) {
+    // console.log(x.substr(0, 10), undo, redo);
 
-    var pair = [lastContent, lastCaret];
+    if (!init) {
+      var pair = [lastContent, lastCaret];
 
-    if (!undo && !redo) {
-      pushUndo(pair);
-      clearRedo();
-    } else if (redo) {
-      pushUndo(pair);
-    } else if (undo) {
-      pushRedo(pair);
+      if (!undo && !redo) {
+        pushUndo(pair);
+        clearRedo();
+      } else if (redo) {
+        pushUndo(pair);
+      } else if (undo) {
+        pushRedo(pair);
+      }
     }
 
     if (!x.endsWith('\n')) {
@@ -570,6 +573,8 @@
     var s = window.getSelection(), r;
 
     if (ro) {
+      lastCaret = ro;
+
       if (document.activeElement !== c)
         c.focus();
 

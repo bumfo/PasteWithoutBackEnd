@@ -112,13 +112,20 @@
 
   var C = document.querySelector("#c");
 
-  C.onchange = () => {
-    update(C.value, false, false, true);
-
+  window.addEventListener('DOMContentLoaded', e => {
     c.contentEditable = true;
     c.spellcheck = false;
     c.focus();
-  };
+  });
+
+  C.addEventListener('change', function f({callee}) {
+    if (callee === update) {
+      console.log('break editor');
+      return;
+    }
+
+    update(C.value, false, false, true, true);
+  });
 
   // document.addEventListener("DOMContentLoaded", function() {
   //   update(document.querySelector("script").innerHTML);
@@ -487,8 +494,41 @@
   var lastContent = '';
   var lastCaret = [0, 0];
 
-  function update(x, undo, redo, init) {
+  function throttle(callback, limit) {
+    var wait = false;
+    var call = true;
+    return function () {
+      if (!wait) {
+        callback.apply(null, arguments);
+        wait = true;
+        setTimeout(function f() {
+          if (call) {
+            call = false;
+            callback.apply(null, arguments);
+            setTimeout(f, limit);
+          } else {
+            wait = false;
+          }
+        }, limit);
+      } else {
+        call = true;
+      }
+    }
+  }
+
+  var fireUpdated = throttle(function () {
+    var event = new Event('change');
+    event.callee = update;
+
+    C.dispatchEvent(event);
+  }, 100);
+
+  function update(x, undo, redo, init, noFire) {
     // console.log(x.substr(0, 10), undo, redo);
+
+    if (!x.endsWith('\n')) {
+      x += '\n';
+    }
 
     if (!init) {
       var pair = [lastContent, lastCaret];
@@ -501,16 +541,18 @@
       } else if (undo) {
         pushRedo(pair);
       }
-    }
 
-    if (!x.endsWith('\n')) {
-      x += '\n';
+      C.value = x;
     }
 
     lastContent = x;
     lastCaret = getCaret(c);
 
     c.innerHTML = light(encode(x));
+
+    if (!noFire) {
+      fireUpdated();
+    }
   }
 
   var Caret = function() {

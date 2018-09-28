@@ -90,8 +90,6 @@ function updateB(b, e, callee) {
   }
 }
 
-var lastC = '';
-
 var reEncode = async (e, callee) => {
   if (callee === reEncode) {
     return;
@@ -100,10 +98,6 @@ var reEncode = async (e, callee) => {
   if (C.value === '' || c.value === '\n') {
     updateB('plain', e, callee);
 
-    return;
-  }
-
-  if (C.value === lastC) {
     return;
   }
 

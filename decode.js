@@ -90,6 +90,8 @@ function updateB(b, e, callee) {
   }
 }
 
+var lastC = '';
+
 var reEncode = async (e, callee) => {
   if (callee === reEncode) {
     return;
@@ -98,6 +100,10 @@ var reEncode = async (e, callee) => {
   if (C.value === '' || c.value === '\n') {
     updateB('plain', e, callee);
 
+    return;
+  }
+
+  if (C.value === lastC) {
     return;
   }
 
@@ -115,7 +121,13 @@ var reEncode = async (e, callee) => {
   // }
 
   updateB(b, e, callee);
+
+  lastC = C.value;
 };
+
+function setLocationHash(hash) {
+  history.replaceState(undefined, undefined, '#' + hash);
+}
 
 B.oninput = decode;
 B.onchange = function f(e) {
@@ -125,20 +137,68 @@ B.onchange = function f(e) {
   if (j !== -1) {
     b = b.substr(j + 1);
 
-    location.hash = b;
+    setLocationHash(b);
   } else {
-    location.hash = '';
+    setLocationHash('');
   }
 };
 
-C.addEventListener('input', function f({callee}) {
-  if (callee === f) {
+
+function throttle(callback, limit) {
+  var wait = false;
+  var call = true;
+  return function () {
+    var args = [].slice.call(arguments);
+
+    if (!wait) {
+      callback.apply(null, args);
+      wait = true;
+      setTimeout(function f() {
+        if (call) {
+          call = false;
+          callback.apply(null, args);
+          setTimeout(f, limit);
+        } else {
+          wait = false;
+        }
+      }, limit);
+    } else {
+      call = true;
+    }
+  }
+}
+
+function onInput({callee}) {
+  if (callee === onInput) {
     console.log('break input');
     return;
   }
 
-  reEncode(null, callee || f);
-});
+  reEncode(null, callee || onInput);
+}
+
+function throttle2(callback, limit) {
+  var a = null;
+  return function () {
+    clearTimeout(a);
+
+    var args = [].slice.call(arguments);
+    a = setTimeout(function() {
+      callback.apply(null, args);
+      a = null;
+    }, limit);
+  }
+}
+
+var onInputLarge = throttle2(onInput, 1000);
+
+C.addEventListener('input', throttle(function(e) {
+  if (C.value.length < 4096) {
+    onInput(e);
+  } else {
+    onInputLarge(e);
+  }
+}, 100));
 
 C.addEventListener('change', function f({callee}) {
   if (callee === f) {
@@ -152,6 +212,13 @@ C.addEventListener('change', function f({callee}) {
 var z = location.href;
 
 B.value = z;
+
+window.addEventListener('hashchange', function f() {
+  var z = location.href;
+
+  B.value = z;  
+  decode();
+});
 
 (async function() {
   try {

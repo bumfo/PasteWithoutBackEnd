@@ -117,6 +117,7 @@
 
     c.contentEditable = true;
     c.spellcheck = false;
+    c.focus();
   };
 
   // document.addEventListener("DOMContentLoaded", function() {
@@ -402,10 +403,109 @@
     return x.replace(/&/g, "&amp;").replace(/</g, "&lt;");
   }
 
-  function update(x) {
+  var undoStack = [];
+
+  function pushUndo(x) {
+    if (undoStack.length > 1024) {
+      undoStack = undoStack.slice(-1024);
+    }
+
+    undoStack.push(x);
+  }
+
+  function popUndo() {
+    if (undoStack.length === 0) {
+      return null;
+    }
+    return undoStack.pop();
+  }
+
+  var redoStack = [];
+
+  function pushRedo(x) {
+    if (redoStack.length > 1024) {
+      redoStack = redoStack.slice(-1024);
+    }
+
+    redoStack.push(x);
+  }
+
+  function popRedo() {
+    if (redoStack.length === 0) {
+      return null;
+    }
+    return redoStack.pop();
+  }
+
+  function clearRedo() {
+  }
+
+  function undo() {
+    console.log(undoStack);
+
+    var x = popUndo();
+
+    console.log(x);
+
+    console.log(undoStack);
+
+    if (x !== null) {
+      var t = x[1];
+      
+      update(x[0], true, false);
+
+      setCaret(t, c);
+    }
+  }
+
+  function redo() {
+    var x = popRedo();
+    if (x !== null) {
+      var t = x[1];
+
+      update(x[0], false, true);
+
+      setCaret(t, c);
+    }
+  }
+
+  window.addEventListener('keydown', e => {
+    if (e.code === 'KeyZ') {
+      if (e.ctrlKey || e.metaKey) {
+        if (e.shiftKey) {
+          e.preventDefault();
+          redo();
+        } else {
+          e.preventDefault();
+          undo();
+        }
+      }
+    }
+  });
+
+  var lastContent = '';
+  var lastCaret = [0, 0];
+
+  function update(x, undo, redo) {
+    console.log(x.substr(0, 10), undo, redo);
+
+    var pair = [lastContent, lastCaret];
+
+    if (!undo && !redo) {
+      pushUndo(pair);
+      clearRedo();
+    } else if (redo) {
+      pushUndo(pair);
+    } else if (undo) {
+      pushRedo(pair);
+    }
+
     if (!x.endsWith('\n')) {
       x += '\n';
     }
+
+    lastContent = x;
+    lastCaret = getCaret(c);
 
     c.innerHTML = light(encode(x));
   }
@@ -455,10 +555,15 @@
   }();
 
   function getCaret(x) {
-    var s = window.getSelection(), r = s.getRangeAt(0);
+    var s = window.getSelection();
+    if (s.rangeCount > 0) {
+      var r = s.getRangeAt(0);
 
-    return (x.contains(r.startContainer)) ? 
-      [Caret.get(r.startContainer, r.startOffset, x), Caret.get(r.endContainer, r.endOffset, x)] : false;
+      return (x.contains(r.startContainer)) ? 
+        [Caret.get(r.startContainer, r.startOffset, x), Caret.get(r.endContainer, r.endOffset, x)] : [0, 0];
+    } else {
+      return [0, 0];
+    }
   }
 
   function setCaret(ro, y, user) {

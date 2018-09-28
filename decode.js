@@ -36,7 +36,11 @@ var decode = async () => {
   var e = await lzma_decompress(d);
   C.value = e;
 
-  if (C.onchange) C.onchange();
+  try {
+    if (C.onchange) C.onchange();
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 B.oninput = decode;

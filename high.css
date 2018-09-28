@@ -1,0 +1,44 @@
+html, body {
+    margin: 0;
+    padding: 0;
+  }
+  html, body, section, pre, code {
+    min-height: 100vh;
+    display: block;
+  }
+  pre {
+    padding: 0;
+    margin: 0;
+  }
+  pre code {
+    box-sizing: border-box;
+    padding: 8px;
+  }
+  pre code {
+    display: block;
+    outline: none;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    -o-tab-size:  4;
+    white-space: pre-wrap;
+  }
+  code {
+    color: #444;
+    font-family: consolas, menlo, monospace;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+  i {
+    font-weight: bold;
+  }
+  s {
+    color: #999;
+    text-decoration: none;
+  }
+  dfn {
+    color: #222;
+    font-style: normal;
+  }
+  abbr {
+    color: #666;
+  }

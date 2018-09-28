@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<title>Paste without Back End</title>
+
+<meta name="viewport" content="width=device-width, minimal-ui, initial-scale=1.0" />
+
+<style>
+  @import url("high.css");
+</style>
+
+<section>
+  <pre><code></code></pre>
+
+  <div style="display: none">
+    <h1>Paste without Back End</h1>
+
+    <div><textarea id="b" cols="40" style="width: 60%; display: none;"></textarea></div>
+    <div><textarea id="c" cols="40" rows="20" style="width: 60%"></textarea></div>
+  </div>
+</section>
+
+<script>
+  var light = (function() {
+    var reg = /(?:(int|void|long|short|float|double|char|signed|unsigned|typedef|struct)\b|(if|else|for|while|do|return|break|continue|sizeof)\b)|(("|')(?:(?!\4)[^\\]|\\.)*?(?:\4|$)|\/\*(?:[^*]|\*(?!\/))*\*\/|\/\/.*$|(\/(?![\/*])(?:[^\\\/\n]|\\[^ ])*\/[gim]*)|([a-zA-Z_$][a-zA-Z_$0-9.]*(?=\.))?(\.)?([a-zA-Z_$][a-zA-Z_$0-9]*)(?=\s*[=:]\s*function(?:[^a-zA-Z_$0-9]|$))|(\.\s*)?(scanf|printf|malloc|free)(?=\()|(function)\b(\s*)((?:[a-zA-Z_$][a-zA-Z_$0-9]*)?)(?:\(([^\)\n]*)\))|(this|window|document)\b|(0x[0-9a-fA-F]+|[0-9]+|TRUE|FALSE|NULL)\b|((?:\.\s*)?[a-zA-Z_$0-9]+|[\)\]\}])|^\s*(#\s*)(?:(include\s*)(&lt;[^>]*>)?)?)(\s*\/(?![\/\*]))?|((?:(?!\/\*|\/\/)[=+\-*\/>!]|(?:[|]|&amp;|&lt;)+)(?:[=\+\-]*))/gm;
+
+    return function(a) {
+      return a.replace(reg, 
+        function(a, b, c, dd, d, e, ff, fff, f, gg, g, h, i, j, k, l, m, o, directive, dcmd, durl, p, n) {
+          return  b ? "<i>" + a + "</i>" : 
+              c ? "<strong>" + a + "</strong>" : 
+              (d ? "<u>" + dd + "</u>" : 
+              e ? "<u>" + e + "</u>" : 
+              f ? (ff ? "<em>" + ff + "</em>" : "") + (fff ? fff : "") + "<dfn>" + f + "</dfn>" : 
+              g ? (gg ? gg : "") + "<em>" + g + "</em>" : 
+              h ? "<i>" + h + "</i>" + i + "<dfn>" + j + "</dfn>" + "(<var>" + k + "</var>)" : 
+              l ? "<em>" + l + "</em>" : 
+              m ? "<abbr>" + m + "</abbr>" : 
+              o ? o : 
+              directive ? directive + (dcmd ? '<b>' + dcmd + '</b>' + (durl ? '<u>' + durl + '</u>' : '') : '') :
+              n ? "<b>" + n + "</b>" 
+              : "<s>" + dd + "</s>") + (p ? "<b>" + p + "</b>" : ""); 
+        });
+    }
+  }());
+</script>
+<script src="high.js"></script>
+<script src="bin.js"></script>
+<script src="decode.js"></script>

@@ -24,7 +24,7 @@ pre code {
 }
 code {
   color: #444;
-  font-family: consolas, menlo, monospace;
+  font-family: consolas, "SFMono-Regular", "Liberation Mono", Menlo, Courier, monospace;
   font-size: 16px;
   line-height: 1.2;
 }
